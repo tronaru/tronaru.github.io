@@ -70,12 +70,11 @@ function widgetSuccessCallback(res) {
 
 function widgetErrorCallback (err) {
 }
-
 signInWidget.renderEl({el: '#widget-container'}, widgetSuccessCallback, widgetErrorCallback);
-
+<div id="widget-container"></div>
 </script>
 
-<script>
+<script
   var signIn = new OktaSignIn({baseUrl: 'https://okta2.crownight.com'});
   signIn.renderEl({
     el: '#widget-container'
