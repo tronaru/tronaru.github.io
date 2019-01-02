@@ -23,7 +23,7 @@
         el: '#widget-container'
       },
       function success(res) {
- res.session.setCookieAndRedirect(orgUrl);
+ signInSuccessCallBackFunction(res);
       },
       function error(err) {
         handleError(err);
