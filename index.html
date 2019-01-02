@@ -72,6 +72,7 @@ signInWidget.renderEl({el: '#widget-container'}, widgetSuccessCallback, widgetEr
 <div id="widget-container"></div>
 
 <script>
+  var orgUrl = 'https://okta2.crownight.com';
   var signIn = new OktaSignIn({baseUrl: 'https://okta2.crownight.com'});
   var str = decodeURIComponent(window.location.href);
   var redirectUrl = str.substr(str.indexOf("?fromURI=") + 9);
