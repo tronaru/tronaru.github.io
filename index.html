@@ -78,7 +78,10 @@ signInWidget.renderEl({el: '#widget-container'}, widgetSuccessCallback, widgetEr
   }, function success(res) {
     if (res.status === 'SUCCESS') {
       console.log('Do something with this sessionToken', res.session.token);
-    } else {
+if (str.includes("?fromURI")) {
+         res.session.setCookieAndRedirect(redirectUrl); }
+        else {res.session.setCookieAndRedirect(orgUrl);}
+
     // The user can be in another authentication state that requires further action.
     // For more information about these states, see:
     //   https://github.com/okta/okta-signin-widget#rendereloptions-success-error
