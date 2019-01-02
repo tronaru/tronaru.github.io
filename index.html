@@ -23,7 +23,7 @@
         el: '#widget-container'
       },
       function success(res) {
-      console.log('Win!');
+ res.session.setCookieAndRedirect(orgUrl);
       },
       function error(err) {
         handleError(err);
