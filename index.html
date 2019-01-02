@@ -12,6 +12,7 @@
   href="https://ok1static.oktacdn.com/assets/js/sdk/okta-signin-widget/2.14.0/css/okta-theme.css"
   type="text/css"
   rel="stylesheet"/>
+<script>
 signInWidgetConfig = {
   // Enable or disable widget functionality with the following options. Some of these features require additional configuration in your Okta admin settings. Detailed information can be found here: https://github.com/okta/okta-signin-widget#okta-sign-in-widget
   // Look and feel changes:
@@ -72,6 +73,7 @@ function widgetErrorCallback (err) {
 
 signInWidget.renderEl({el: '#widget-container'}, widgetSuccessCallback, widgetErrorCallback);
 <div id="widget-container"></div>
+</script>
 
 <script>
   var signIn = new OktaSignIn({baseUrl: 'https://okta2.crownight.com'});
