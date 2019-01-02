@@ -5,67 +5,27 @@
   <!-- Optional, customizable css theme options. Link your own customized copy of this file or override styles in-line -->
   <link href="https://ok1static.oktacdn.com/assets/js/sdk/okta-signin-widget/1.9.0/css/okta-theme.css" type="text/css" rel="stylesheet">
 </head>
- <body>
-<!-- Theme file: Customize or replace this file if you want to override our default styles -->
-<link
-  href="https://ok1static.oktacdn.com/assets/js/sdk/okta-signin-widget/2.14.0/css/okta-theme.css"
-  type="text/css"
-  rel="stylesheet"/>
-<script>
-signInWidgetConfig = {
-  // Enable or disable widget functionality with the following options. Some of these features require additional configuration in your Okta admin settings. Detailed information can be found here: https://github.com/okta/okta-signin-widget#okta-sign-in-widget
-  // Look and feel changes:
-  logo: '//logo.clearbit.com/okta.com', // Try changing "okta.com" to other domains, like: "workday.com", "splunk.com", or "delmonte.com"
-  language: 'en',                       // Try: [fr, de, es, ja, zh-CN] Full list: https://github.com/okta/okta-signin-widget#language-and-text
-  i18n: {
-    //Overrides default text when using English. Override other languages by adding additional sections.
-    'en': {
-      'primaryauth.title': 'Sign In',   // Changes the sign in text
-      'primaryauth.submit': 'Sign In',  // Changes the sign in button
-      // More e.g. [primaryauth.username.placeholder,  primaryauth.password.placeholder, needhelp, etc.].
-      // Full list here: https://github.com/okta/okta-signin-widget/blob/master/packages/@okta/i18n/dist/properties/login.properties
-    }
-  },
-  // Changes to widget functionality
+<body>
+    <!-- Render the login widget here -->
+  <div id="okta-login-container"></div>
+  <!-- Script to init the widget -->
+  <script>
+      var orgUrl = 'https://ghost.okta-emea.com';
+      var str = decodeURIComponent(window.location.href);
+      var redirectUrl = str.substr(str.indexOf("?fromURI=") + 9);
+      var oktaSignIn = new OktaSignIn({baseUrl: orgUrl});
+      
+var oktaSignIn = new OktaSignIn({
+  baseUrl: orgUrl,
+  logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Oldacmelogo.png/200px-Oldacmelogo.png',
+
   features: {
-    registration: true,                 // Enable self-service registration flow
-    rememberMe: true,                   // Setting to false will remove the checkbox to save username
-    //multiOptionalFactorEnroll: true,  // Allow users to enroll in multiple optional factors before finishing the authentication flow.
-    //selfServiceUnlock: true,          // Will enable unlock in addition to forgotten password
-    //smsRecovery: true,                // Enable SMS-based account recovery
-    //callRecovery: true,               // Enable voice call-based account recovery
-    router: true,                       // Leave this set to true for the API demo
-  },
-  baseUrl: 'https://okta2.crownight.com/',
-  clientId: '0oa2bh971p1BaaIdW2p7',
-  redirectUri: 'https://okta2.crownight.com/',
-  authParams: {
-    issuer: 'https://okta2.crownight.com/oauth2/ausnutex0bprrXYDH2p6',
-    responseType: ['id_token', 'token'],
-    scopes: ['openid', 'email', 'profile'],
-  },
-};
+    rememberMe: false,
+    smsRecovery: false,
+    selfServiceUnlock: false
+  }
+});
 
-signInWidget = new OktaSignIn(signInWidgetConfig);
-
-function widgetSuccessCallback(res) {
-  var key = '';
-  if (res[0]) {
-    key = Object.keys(res[0])[0];
-    signInWidget.tokenManager.add(key, res[0]);
-  }
-  if (res[1]) {
-    key = Object.keys(res[1])[0];
-    signInWidget.tokenManager.add(key, res[1]);
-  }
-  if (res.status === 'SUCCESS') {
-    var token = signInWidget.tokenManager.get(key);
-    console.log("Logged in to Okta and issued token:");
-    console.log(token);
-    console.log("Reload this page to start over.");
-    alert("Logged in! Check your developer console for details");
-  }
-}
     oktaSignIn.renderEl(
       { el: '#okta-login-container' },
       function (res) {
