@@ -38,8 +38,8 @@ function widgetErrorCallback (err) {
   var redirectUrl = str.substr(str.indexOf("?fromURI=") + 9);
   signIn.renderEl({
     el: '#widget-container'
-  }
-                  signIn.session.get(function (res) {
+  })
+  signIn.session.get(function (res) {
   // Session exists, show logged in state.
   if (res.status === 'ACTIVE') {
     console.log('Success!');
