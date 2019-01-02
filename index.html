@@ -80,10 +80,9 @@ signInWidget.renderEl({el: '#widget-container'}, widgetSuccessCallback, widgetEr
     el: '#widget-container'
   }, function success(res) {
     if (res.status === 'SUCCESS') {
-      console.log('Do something with this sessionToken', res.session.token);
-if (str.includes("?fromURI")) {
-         res.session.setCookieAndRedirect(redirectUrl); }
-        else {res.session.setCookieAndRedirect(orgUrl);}
+      console.log('You might be already logged in', res.session.token);
+      else { console.log('Relog, man!', res.session.token);
+
 
     // The user can be in another authentication state that requires further action.
     // For more information about these states, see:
