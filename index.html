@@ -46,9 +46,7 @@ signInWidgetConfig = {
     scopes: ['openid', 'email', 'profile'],
   },
 };
-
 signInWidget = new OktaSignIn(signInWidgetConfig);
-
 function widgetSuccessCallback(res) {
   var key = '';
   if (res[0]) {
@@ -67,12 +65,13 @@ function widgetSuccessCallback(res) {
     alert("Logged in! Check your developer console for details");
   }
 }
-
 function widgetErrorCallback (err) {
 }
-
+</script>
 signInWidget.renderEl({el: '#widget-container'}, widgetSuccessCallback, widgetErrorCallback);
 <div id="widget-container"></div>
+
+<script>
   var signIn = new OktaSignIn({baseUrl: 'https://okta2.crownight.com'});
   signIn.renderEl({
     el: '#widget-container'
