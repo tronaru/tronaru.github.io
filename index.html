@@ -38,14 +38,26 @@ function widgetErrorCallback (err) {
   var redirectUrl = str.substr(str.indexOf("?fromURI=") + 9);
   signIn.renderEl({
     el: '#widget-container'
-  }, function success(res) {
-    if (res.status === 'SUCCESS') {
-      console.log('You might be already logged in', res.session.token)}
-      else { console.log('Relog, man!', res.session.token);
-        if (str.includes("?fromURI")) {
-         res.session.setCookieAndRedirect(redirectUrl); }
-        else {res.session.setCookieAndRedirect(orgUrl);}
-
+  }
+                  signIn.session.get(function (res) {
+  // Session exists, show logged in state.
+  if (res.status === 'ACTIVE') {
+    console.log('Success!');
+  }
+  // No session, or error retrieving the session. Render the Sign-In Widget.
+  else if (res.status === 'INACTIVE') {
+    signIn.renderEl({
+        el: '#osw-container'
+      },
+      function success(res) {
+        // showApp() if res.status === 'SUCCESS'
+      },
+      function error(err) {
+        // handleError(err)
+      }
+    );
+  }
+});
     // The user can be in another authentication state that requires further action.
     // For more information about these states, see:
     //   https://github.com/okta/okta-signin-widget#rendereloptions-success-error
