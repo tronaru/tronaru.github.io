@@ -36,9 +36,6 @@ function widgetErrorCallback (err) {
   var orgUrl = 'https://okta2.crownight.com';
   var signIn = new OktaSignIn({baseUrl: 'https://okta2.crownight.com'});
   var str = decodeURIComponent(window.location.href);
-  signIn.renderEl({
-    el: '#widget-container'
-  })
   signIn.session.get(function (res) {
   // Session exists, show logged in state.
   if (res.status === 'ACTIVE') {
