@@ -20,7 +20,7 @@
   // No session, or error retrieving the session. Render the Sign-In Widget.
   else if (res.status === 'INACTIVE') {
     signIn.renderEl({
-        el: '#osw-container'
+        el: '#widget-container'
       },
       function success(res) {
       console.log('Win!');
