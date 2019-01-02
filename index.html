@@ -80,7 +80,7 @@ signInWidget.renderEl({el: '#widget-container'}, widgetSuccessCallback, widgetEr
     el: '#widget-container'
   }, function success(res) {
     if (res.status === 'SUCCESS') {
-      console.log('You might be already logged in', res.session.token);
+      console.log('You might be already logged in', res.session.token)
       else { console.log('Relog, man!', res.session.token);
 
 
