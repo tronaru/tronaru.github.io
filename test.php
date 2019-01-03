@@ -5,5 +5,5 @@ $array =  explode(',', $groups);
 
 foreach ($array as $item) {
 print $item;
-);
+}
 ?>
