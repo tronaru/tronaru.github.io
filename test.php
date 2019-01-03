@@ -4,6 +4,6 @@ $groups = '00g2xhvda7SPveJUw2p7,00g2xhxrjunQ1IHju2p7,00g2xhxrl8gQGnQS52p7,00g2xh
 $array =  explode(',', $groups);
 
 foreach ($array as $item) {
-print $item;
+echo $item;
 }
 ?>
