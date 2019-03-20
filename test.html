@@ -20,25 +20,6 @@ var signIn = new OktaSignIn({
  }
 });
 
-if (!signIn.token.hasTokensInUrl()) {
- signIn.renderEl({el: '#widget-container'},
-   function() {},
-   function(err) { console.err(err) });
-}
-
-else {
- signIn.token.parseTokensFromUrl(
-   function success(res) {
-     // Add the token to tokenManager to automatically renew the token when needed
-     signIn.tokenManager.add('id_token', res[0]);
-     signIn.tokenManager.add('access_token', res[1]);
-   },
-   function error(err) {
-     console.log('handle error', err);
-   }
- );
-}
-
   signIn.session.get(function (res) {
   // Session exists, show logged in state.
   if (res.status === 'ACTIVE') {
