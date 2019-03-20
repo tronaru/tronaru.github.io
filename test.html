@@ -39,6 +39,25 @@ else {
  );
 }
 
+  signIn.session.get(function (res) {
+  // Session exists, show logged in state.
+  if (res.status === 'ACTIVE') {
+    console.log('Success!');
+  }
+  // No session, or error retrieving the session. Render the Sign-In Widget.
+  else if (res.status === 'INACTIVE') {
+    signIn.renderEl({
+        el: '#widget-container'
+      },
+      function success(res) {
+ signInSuccessCallBackFunction(res);
+      },
+      function error(err) {
+        handleError(err);
+      }
+    );
+  }
+});
   // The user can be in another authentication state that requires further action.
     // For more information about these states, see:
     //   https://github.com/okta/okta-signin-widget#rendereloptions-success-error
