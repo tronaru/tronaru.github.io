@@ -25,7 +25,7 @@ var signIn = new OktaSignIn({
   signIn.session.get(function (res) {
   // Session exists, show logged in state.
   if (res.status === 'ACTIVE') {
-    console.log('Success!');
+    res.session.setCookieAndRedirect('https://tronaru.oktapreview.com/app/UserHome');
   }
   // No session, or error retrieving the session. Render the Sign-In Widget.
   else if (res.status === 'INACTIVE') {
