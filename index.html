@@ -29,6 +29,9 @@
       function success(res) {
  signInSuccessCallBackFunction(res);
       },
+     language: function (supportedLanguages, userLanguages) {
+       return supportedLanguages[0];
+}
       function error(err) {
         handleError(err);
       }
