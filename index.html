@@ -15,7 +15,7 @@
     baseUrl: 'https://okta.crownight.com',
     language: function (supportedLanguages, userLanguages) {
       return supportedLanguages[0];
-    }
+    },
   signIn.session.get(function (res) {
   // Session exists, show logged in state.
   if (res.status === 'ACTIVE') {
