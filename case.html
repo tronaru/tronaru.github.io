@@ -1,0 +1,322 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!--
+    IAM-CACHE-CONTROL: no-cache
+     -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>McAfee Sign In</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="settings.js?version=1"></script>
+    <script src='//cdn.appdynamics.com/adrum/adrum-4.5.1.1066.js'></script>
+    <link type="text/css" rel="stylesheet" href="https://ok1static.oktacdn.com/assets/js/sdk/okta-signin-widget/2.14.0/css/okta-sign-in.min.css" />
+    <link type="text/css" rel="stylesheet" href="/styles/okta-theme.css?v=1.1.27" />
+    <link type="text/css" rel="stylesheet" href="styles/app.css?v=1.1.27" />
+    <script src="https://ok1static.oktacdn.com/assets/js/sdk/okta-signin-widget/2.14.0/js/okta-sign-in.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/i18next/11.9.1/i18next.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/i18next-xhr-backend/1.5.1/i18nextXHRBackend.min.js"></script>
+    <script src="auth.js"></script>
+    <script src="login.js"></script>
+    <script src="localization.js"></script>
+    <script>
+    // Translate localize strings
+    loadLocalization(function () {
+      addLocalization(function () {
+        document.getElementById('authErrorMessage').innerHTML = i18next.t('errorFound');
+        document.getElementById('email').innerHTML = i18next.t('email');
+        document.getElementById('selectLang').innerHTML = i18next.t('selectLanguage');
+        document.getElementById('forgotPassword').innerHTML = i18next.t('forgotPassword');
+        document.getElementById('help').innerHTML = i18next.t('help');
+        document.getElementById('signUpNow').innerHTML = i18next.t('signUpNow');
+        document.getElementById('NeedHelpSigningIn').innerHTML = i18next.t('NeedHelpSigningIn');
+        document.getElementById('okta-signin-submit').value = i18next.t('next');
+        document.getElementById('signUpText').innerHTML = i18next.t('mvisionAccountSignin');
+      });
+
+      document.getElementById('emailForm').style.visibility = 'hidden';
+
+      document.getElementById('selectLanguage').onchange = function () {
+        window.iam.Login.setCookie('iam_user_locale', document.getElementById('selectLanguage').value);
+        translate();
+      };
+
+      function addLangOption () {
+        var langDropDown = document.getElementById('selectLanguage');
+        for (let i = 0; i < window.iam.settings.languageOptions.length; i++) {
+          let optn = document.createElement('OPTION');
+          optn.text = i18next.t(window.iam.settings.languageOptions[i].countryLang);
+          optn.value = window.iam.settings.languageOptions[i].langCode;
+          langDropDown.options.add(optn);
+        }
+        langDropDown.value = window.iam.Token.getCookie('iam_user_locale') || 'en_US';
+
+        var x = document.getElementsByClassName('showLanguage');
+        for (var i = 0; i < x.length; ++i) {
+          x[i].style.display = 'block';
+        }
+        // document.getElementById('languageOptions').style.display = 'none';
+      }
+
+      addLangOption();
+      window.iam.Login.addFormField('locale', document.getElementById('selectLanguage').value);
+
+      if (window.iam.Token.tokenExpired()) {
+        window.localStorage.removeItem('accessToken');
+        window.localStorage.removeItem('accessTokenExpires');
+        window.localStorage.removeItem('tenants');
+        window.localStorage.removeItem('tokenExchange');
+      }
+
+      window.localStorage.removeItem('t_id');
+      window.iam.Login.setEmailFormAction().then(function () {
+        window.iam.Login.handleErrors();
+
+        function isSafari () {
+          return /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+        }
+
+        function thirdPartyCookieNotification () {
+          if (isSafari()) {
+            return {
+              'title': 'Safari browser detected',
+              'priority': 3,
+              'text': "McAfee Sign In uses features blocked by Safari's cross-site tracking prevention. Please ensure this preference is disabled in your browser."
+            };
+          }
+        }
+
+        function getMin (arr, prop) {
+          var min;
+          for (var i = 0; i < arr.length; i++) {
+            if (!min || parseInt(arr[i][prop]) < parseInt(min[prop])) { min = arr[i]; }
+          }
+          return min;
+        }
+
+        function sortDate (a, b) {
+          return new Date(a.date).getTime() - new Date(b.date).getTime();
+        }
+
+        function createNotificationDiv (message, displayCloseMenu) {
+          var outerDiv = document.createElement('div');
+          var notificationTableDiv = document.createElement('div');
+          notificationTableDiv.className = 'notificationTableDiv';
+          if (!displayCloseMenu) {
+            notificationTableDiv.className += ' notificationTableDivMargin';
+          }
+
+          var notificationTableImageDiv = document.createElement('div');
+          notificationTableImageDiv.className = 'notificationTableImageDiv';
+
+          var notificationImage = document.createElement('img');
+          notificationImage.src = '/images/toast-critical.svg';
+          if (message.priority === '2') {
+            notificationImage.src = '/images/toast-notification.svg';
+          } else if (message.priority === '3') {
+            notificationImage.src = '/images/toast-informational.svg';
+          } else if (message.priority === '4') {
+            notificationImage.src = '/images/toast-success.svg';
+          }
+
+          var notificationTableTitleDiv = document.createElement('div');
+          notificationTableTitleDiv.className = 'notificationTableTitleDiv';
+          var notificationTableTitleSpan = document.createElement('span');
+          notificationTableTitleSpan.className = 'notificationTableTitleSpan';
+          notificationTableTitleDiv.appendChild(notificationTableTitleSpan);
+          notificationTableTitleSpan.appendChild(document.createTextNode(message.title));
+          notificationTableTitleDiv.appendChild(document.createElement('br'));
+
+          if (message.subtitle) {
+            var notificationTableSubTitleSpan = document.createElement('span');
+            notificationTableSubTitleSpan.appendChild(document.createTextNode(message.subtitle));
+            notificationTableTitleDiv.appendChild(notificationTableSubTitleSpan);
+          }
+
+          var notificationCloseImageDiv = document.createElement('div');
+          notificationCloseImageDiv.className = 'notificationCloseImageDiv';
+
+          if (displayCloseMenu) {
+            var notificationCloseImage = document.createElement('img');
+            notificationCloseImage.src = '/images/toast-close.svg';
+            notificationCloseImage.className = 'notificationCloseImage';
+            notificationCloseImage.onclick = function () {
+              if (window.iam.settings.debug) console.log('hiding messages');
+              document.getElementById('notificationLevelColor').style.display = '';
+              document.getElementById('notificationPopup').style.display = 'none';
+            };
+            notificationCloseImageDiv.appendChild(notificationCloseImage);
+          }
+
+          var notificationTableTextDiv = document.createElement('div');
+          notificationTableTextDiv.className = 'notificationTableTextDiv';
+          // notificationTableTextDiv.appendChild(document.createTextNode(message.text))
+          notificationTableTextDiv.innerHTML = message.text;
+
+          notificationTableImageDiv.appendChild(notificationImage);
+          notificationTableDiv.appendChild(notificationTableImageDiv);
+          notificationTableDiv.appendChild(notificationTableTitleDiv);
+          if (displayCloseMenu) {
+            notificationTableDiv.appendChild(notificationCloseImageDiv);
+          }
+          outerDiv.appendChild(notificationTableDiv);
+          outerDiv.appendChild(notificationTableTextDiv);
+
+          document.getElementById('notificationPopup').appendChild(outerDiv);
+        }
+
+        var xmlhttp = new XMLHttpRequest();
+
+        xmlhttp.onreadystatechange = function () {
+          if (xmlhttp.readyState === XMLHttpRequest.DONE) {
+            if (xmlhttp.status === 200) {
+              if (window.iam.settings.debug) console.log('XMLHttpRequest', xmlhttp);
+
+              if (!xmlhttp.responseText) {
+                return;
+              }
+
+              var jsonResponse = JSON.parse(xmlhttp.responseText);
+              if (window.iam.settings.debug) console.log('jsonResponse', jsonResponse);
+              var messages = jsonResponse['messages'];
+
+              if (!window.iam.settings.useCookies) {
+                var thirdPartyCookieNotificationMessage = thirdPartyCookieNotification();
+                if (thirdPartyCookieNotificationMessage) { messages.push(thirdPartyCookieNotificationMessage); }
+              }
+
+              if (!messages || messages.length === 0) {
+                return;
+              }
+
+              // if (window.iam.settings.debug) console.log('messages', messages)
+              messages.sort(sortDate);
+              if (window.iam.settings.debug) console.log('messages', messages);
+              var maxPriority = getMin(messages, 'priority');
+              if (window.iam.settings.debug) console.log('maxPriority', maxPriority['priority']);
+              document.getElementById('notificationNumber').innerText = messages.length + ' Notifications';
+
+              document.getElementById('notificationLevelIcon').src = 'images/toast-critical.svg';
+              document.getElementById('notificationLevelColor').style.borderLeftColor = '#f70000';
+              document.getElementById('notificationPopup').style.borderLeftColor = '#f70000';
+              if (maxPriority['priority'] === 2) {
+                document.getElementById('notificationLevelIcon').src = 'images/toast-notification.svg';
+                document.getElementById('notificationLevelColor').style.borderLeftColor = '#f5d000';
+                document.getElementById('notificationPopup').style.borderLeftColor = '#f5d000';
+              }
+              if (maxPriority['priority'] === 3) {
+                document.getElementById('notificationLevelIcon').src = 'images/toast-informational.svg';
+                document.getElementById('notificationLevelColor').style.borderLeftColor = '#cceffc';
+                document.getElementById('notificationPopup').style.borderLeftColor = '#cceffc';
+              }
+              if (maxPriority['priority'] === 4) {
+                document.getElementById('notificationLevelIcon').src = 'images/toast-success.svg';
+                document.getElementById('notificationLevelColor').style.borderLeftColor = '#8cc74f';
+                document.getElementById('notificationPopup').style.borderLeftColor = '#8cc74f';
+              }
+
+              document.getElementById('notificationLevelColor').style.cursor = 'pointer';
+
+              document.getElementById('notificationLevelColor').onclick = function () {
+                if (window.iam.settings.debug) console.log('displaying messages');
+                document.getElementById('notificationLevelColor').style.display = 'none';
+                document.getElementById('notificationPopup').style.display = '';
+              };
+
+              document.getElementById('notificationLevelColor').style.display = '';
+
+              if (messages.length === 1) {
+                document.getElementById('notificationLevelColor').style.display = 'none';
+                document.getElementById('notificationPopup').style.display = '';
+                document.getElementById('notificationPopup').style.height = '';
+              }
+
+              for (var i = 0; i < messages.length; i++) {
+                createNotificationDiv(messages[i], (i === 0 && messages.length > 1));
+              }
+            } else if (xmlhttp.status === 400) {
+              console.log('There was an error 400', xmlhttp);
+            } else {
+              console.log('something else other than 200 was returned ', xmlhttp);
+            }
+          }
+        };
+        xmlhttp.open('GET', window.iam.settings.notificationJson, true);
+        xmlhttp.send();
+      });
+    });
+    </script>
+</head>
+<body>
+
+<div id="okta-login-container">
+    <div id="okta-sign-in" class="auth-container main-container no-beacon">
+        <div class="okta-sign-in-header auth-header"><img src="/images/logo.svg" class="auth-org-logo" alt="">
+            <div data-type="beacon-container" class="beacon-container"></div>
+        </div>
+        <div class="auth-content" style="padding-bottom: 0">
+            <div class="auth-content-inner">
+                <div class="primary-auth">
+                    <div class="loading userDetailLoadingOverlay" style="text-align: center;" id="spinner">
+                        <svg class="lsg-spinner" viewBox="0 0 69 69" version="1.1" width="69px" height="69px">
+                            <g transform="translate(3 3)" stroke-width="6" fill="none" fill-rule="evenodd"><circle stroke="#E6E7E8" opacity=".404" cx="31.5" cy="31.5" r="31.5"></circle><path d="M31.5 63c7.495 0 14.38-2.618 19.788-6.99C58.432 50.237 63 41.402 63 31.5c0-6.887-2.21-13.258-5.96-18.442C51.317 5.147 42.01 0 31.5 0 14.103 0 0 14.103 0 31.5" stroke="#00AEEF"></path></g>
+                        </svg>
+                    </div>
+                    <form method="GET" name='emailForm' id="emailForm" class="primary-auth-form o-form o-form-edit-mode">
+                        <div class="o-form-content o-form-theme clearfix">
+                            <h2 class="okta-form-title o-form-head">MVISION</h2>
+                            <div id="authErrorMessagePanel" class="o-form-error-container o-form-has-errors" style="display: none">
+                                <div>
+                                    <div class="okta-form-infobox-error infobox infobox-error">
+                                        <span class="icon error-16"></span>
+                                        <span id="authErrorMessage"><p></p></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="notificationLevelColor" style="display: none; border-width: 1px 1px 1px 5px; border-style: solid; border-color: #939598; border-left-color: #f70000; margin-top: 10px; margin-bottom: 10px; padding: 10px;">
+                                <img id="notificationLevelIcon" src="images/toast-critical.svg" style="float: left" />
+                                <span id="notificationNumber" style="font-weight: bold; margin-left: 10px;"></span>
+                                <img id="notificationLevelExpandIcon" src="images/toast-dropdown.svg" style="float: right" />
+                            </div>
+                            <div id="notificationPopup" style="display: none; border-width: 1px 1px 1px 5px; border-style: solid; border-color: #939598; border-left-color: #f70000; margin-top: 10px; margin-bottom: 10px; padding: 10px; height:100px; overflow: auto"></div>
+                            <div class="o-form-fieldset-container">
+                                <div class="o-form-fieldset o-form-label-top" style="margin-bottom: 0">
+                                    <div class="o-form-input o-form-has-errors">
+                                        <span id="email" class="email"></span><br />
+                                        <span class="o-form-input-name-username o-form-control okta-form-input-field input-fix o-form-has-errors">
+                                            <input type="text" name="login_hint" id="login_hint" autofocus="true" >
+                                        </span>
+                                    </div>
+                                    <div id="languageOptions" class="o-form-input o-form-has-errors showLanguage">
+                                        <span id="selectLang" class="email"></span><br />
+                                        <select id="selectLanguage" class="o-form-input-name-username o-form-control okta-form-input-field input-fix o-form-has-errors tenantSelectOption"></select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="o-form-button-bar"><input class="button button-primary" type="submit" id="okta-signin-submit"></div>
+                    </form>
+                </div>
+            </div>
+            <div class="auth-footer" style="padding-bottom: 0">
+                <a href="#" onclick="document.getElementById('helpLinks').style.display = document.getElementById('helpLinks').style.display == 'none' ? 'block' : 'none';" class="helpLink link help js-help"><span id="NeedHelpSigningIn"></span></a>
+                <ul id="helpLinks" class="help-links js-help-links" style="display: none;">
+                    <li>
+                        <a href="/signInHelp.html" class="link js-forgot-password"><span id="forgotPassword"></span></a>
+                    </li>
+                    <li>
+                        <a href="https://docs.mcafee.com" class="link js-help-link" target="_blank"><span id="help"></span></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div id="signUpDiv" class="dont-have-a-mvision" style="display: none;">
+            <span id="signUpText"></span>
+            <br /><a id="signUpLink" href="#" class="dont-have-a-mvision-link"><span id="signUpNow"></span></a>
+        </div>
+        <div style="padding-bottom: 20px"></div>
+    </div>
+</div>
+</body>
+</html>
